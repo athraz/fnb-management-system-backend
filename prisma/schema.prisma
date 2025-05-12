@@ -40,6 +40,7 @@ model Menu {
   name String @db.VarChar(100)
   imageUrl String @db.VarChar(100)
   price Decimal @db.Decimal(10, 2)
+  stock Decimal @db.Decimal(10, 0)
   restaurantId String
   categoryId String
   orderMenus OrderMenu[]
