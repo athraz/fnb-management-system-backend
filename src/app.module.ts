@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { RestaurantsModule } from './restaurants/restaurants.module';
-import { CategoriesModule } from './categories/categories.module';
-import { MenusModule } from './menus/menus.module';
+import { CategoriesModule } from './app/categories/categories.module';
+import { MenusModule } from './app/menus/menus.module';
+import { UsersModule } from './app/users/users.module';
+import { RestaurantsModule } from './app/restaurants/restaurants.module';
 
 @Module({
-  imports: [RestaurantsModule, CategoriesModule, MenusModule],
+  imports: [RestaurantsModule, CategoriesModule, MenusModule, UsersModule],
   controllers: [],
   providers: [],
 })

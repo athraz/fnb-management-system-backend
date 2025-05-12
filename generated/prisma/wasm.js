@@ -120,6 +120,13 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  password: 'password',
+  role: 'role'
+};
+
 exports.Prisma.RestaurantScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -140,6 +147,18 @@ exports.Prisma.MenuScalarFieldEnum = {
   categoryId: 'categoryId'
 };
 
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  address: 'address',
+  userId: 'userId'
+};
+
+exports.Prisma.OrderMenuScalarFieldEnum = {
+  menuId: 'menuId',
+  orderId: 'orderId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -152,9 +171,12 @@ exports.Prisma.QueryMode = {
 
 
 exports.Prisma.ModelName = {
+  User: 'User',
   Restaurant: 'Restaurant',
   Category: 'Category',
-  Menu: 'Menu'
+  Menu: 'Menu',
+  Order: 'Order',
+  OrderMenu: 'OrderMenu'
 };
 
 /**
