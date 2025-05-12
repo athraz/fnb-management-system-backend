@@ -5,12 +5,14 @@ import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Response } from 'express';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { AdminGuard } from 'src/common/guards/admin.guard';
+import { CacheKey } from '@nestjs/cache-manager';
 
 @Controller('restaurants')
 export class RestaurantsController {
     constructor(private readonly restaurantsService: RestaurantsService) {}
 
     @Get()
+    @CacheKey('restaurants_all')
     @UseGuards(AuthGuard)
     async getAll(@Res() res: Response) {
         try {

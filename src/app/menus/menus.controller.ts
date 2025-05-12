@@ -8,12 +8,14 @@ import { AdminGuard } from 'src/common/guards/admin.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { CacheKey } from '@nestjs/cache-manager';
 
 @Controller('menus')
 export class MenusController {
     constructor(private readonly menusService: MenusService) {}
 
     @Get()
+    @CacheKey('menus_all')
     @UseGuards(AuthGuard)
     async getAll(@Res() res: Response) {
         try {

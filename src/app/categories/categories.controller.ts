@@ -5,12 +5,14 @@ import { UpdateCategoryDto } from './dtos/update-category.dto';
 import { Response } from 'express';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { AdminGuard } from 'src/common/guards/admin.guard';
+import { CacheKey } from '@nestjs/cache-manager';
 
 @Controller('categories')
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) {}
     
     @Get()
+    @CacheKey('categories_all')
     @UseGuards(AuthGuard)
     async getAll(@Res() res: Response) {
         try {

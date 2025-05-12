@@ -1,24 +1,43 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateMenuDto } from './dtos/create-menu.dto';
 import { UpdateMenuDto } from './dtos/update-menu.dto';
 import { RabbitMQService } from 'src/common/rabbitmq/rabbitmq.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class MenusService {
     constructor(
         private prisma: PrismaService,
-        private rabbitmq: RabbitMQService
+        private rabbitmq: RabbitMQService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) {}
 
     async getAll() {
         const menus = await this.prisma.menu.findMany();
-        
-        return menus.map(menu => ({
-            ...menu,
-            price: parseFloat(menu.price.toString()),
-            stock: parseInt(menu.stock.toString(), 10)
-        }));
+
+        const detailedMenus = await Promise.all(
+            menus.map(async (menu) => {
+                const restaurant = await this.prisma.restaurant.findUnique({
+                    where: { id: menu.restaurantId },
+                });
+
+                const category = await this.prisma.category.findUnique({
+                    where: { id: menu.categoryId },
+                });
+
+                return {
+                    ...menu,
+                    price: parseFloat(menu.price.toString()),
+                    stock: parseInt(menu.stock.toString(), 10),
+                    restaurant,
+                    category,
+                };
+            })
+        );
+
+        return detailedMenus;
     }
     
     async getById(id: string) {
@@ -26,15 +45,25 @@ export class MenusService {
             where: { id },
         });
 
-        if (menu) {
-            return {
-                ...menu,
-                price: parseFloat(menu.price.toString()),
-                stock: parseInt(menu.stock.toString(), 10)
-            };
+        if (!menu) {
+            return null;
         }
 
-        return null;
+        const restaurant = await this.prisma.restaurant.findUnique({
+            where: { id: menu.restaurantId },
+        });
+
+        const category = await this.prisma.category.findUnique({
+            where: { id: menu.categoryId },
+        });
+
+        return {
+            ...menu,
+            price: parseFloat(menu.price.toString()),
+            stock: parseInt(menu.stock.toString(), 10),
+            restaurant,
+            category,
+        };
     }
 
     async create(req: CreateMenuDto) {
@@ -56,6 +85,7 @@ export class MenusService {
             }),
         );
         
+        await this.cacheManager.del('menus_all');
         return newMenu;
     }
 
@@ -81,10 +111,12 @@ export class MenusService {
             }),
         );
 
+        await this.cacheManager.del('menus_all');
         return updatedMenu;
     }
 
     async delete(id: string) {
+        await this.cacheManager.del('menus_all');
         return this.prisma.menu.delete({
             where: {id},
         })
