@@ -12,7 +12,8 @@ export class RabbitMQService {
 
     private async connect() {
         try {
-            this.connection = await amqp.connect('amqp://localhost');
+            const rabbitUrl = process.env.RABBITMQ_URL || 'amqp://localhost';
+            this.connection = await amqp.connect(rabbitUrl);
             this.channel = await this.connection.createChannel();
             await this.channel.assertQueue('menu_updates', { durable: true });
             await this.channel.assertQueue('order_updates', { durable: true });
