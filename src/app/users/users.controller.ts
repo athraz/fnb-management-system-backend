@@ -14,7 +14,7 @@ export class UsersController {
     @Post('login')
     async login(@Body() req: LoginUserDto, @Res() res: Response) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
             const data = await this.usersService.login(req)
@@ -31,7 +31,11 @@ export class UsersController {
                         ? 400
                         : 500;
 
-            const message = error.message || 'Internal Server Error';
+            const message = error instanceof BadRequestException ||
+                        error instanceof UnauthorizedException ||
+                        error instanceof NotFoundException
+                        ? error.message 
+                        : 'Internal Server Error';
 
             return res.status(status).json({
                 status: false,
@@ -41,17 +45,17 @@ export class UsersController {
         }
     }
 
+
     @Post('logout')
     async logout(@Req() req: Request, @Res() res: Response) {
         const token = req.headers['authorization']?.split(' ')[1];
         
         if (!token) {
-            const response = {
+            return res.status(400).json({
                 status: false,
-                message: 'Token tidak ada',
+                message: 'Token is missing',
                 data: null,
-            };
-            return res.status(400).json(response);
+            });
         }
 
         try {
@@ -62,13 +66,25 @@ export class UsersController {
 
             return res.json({
                 status: true,
-                message: 'User berhasil logout',
+                message: 'Logout user successful',
                 data: null,
             });
         } catch (error) {
-            return res.status(400).json({
+            const status = error instanceof BadRequestException ||
+                            error instanceof UnauthorizedException ||
+                            error instanceof NotFoundException
+                            ? 400
+                            : 500;
+
+            const message = error instanceof BadRequestException ||
+                            error instanceof UnauthorizedException ||
+                            error instanceof NotFoundException
+                            ? error.message 
+                            : 'Internal Server Error';
+
+            return res.status(status).json({
                 status: false,
-                message: error.message || 'User gagal logout',
+                message: message,
                 data: null,
             });
         }

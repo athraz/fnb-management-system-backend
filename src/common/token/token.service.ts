@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -36,12 +36,12 @@ export class TokenService {
 
     async validateToken(token: string): Promise<any> {
         if (this.invalidate.has(token)) {
-            throw new Error('Token sudah tidak valid');
+            throw new Error('Token has already invalidated');
         }
 
         try {
             const decoded = this.jwtService.verify(token, { secret: this.secretKey });
-        return decoded;
+            return decoded;
         } catch (error) {
             this.logger.error('Invalid token', error);
             throw new Error('Invalid token');
@@ -50,7 +50,7 @@ export class TokenService {
 
     invalidateToken(token: string): void {
         if (this.invalidate.has(token)) {
-            throw new Error('Token sudah tidak valid');
+            throw new Error('Token has already invalidated');
         }
 
         this.invalidate.set(token, new Date());

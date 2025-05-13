@@ -17,13 +17,13 @@ export class UsersService {
         });
 
         if (!user) {
-            throw new NotFoundException('Username tidak terdaftar');
+            throw new NotFoundException('Username is not registered');
         }
 
         const checkPassword = await bcrypt.compare(req.password, user.password);
 
         if (!checkPassword) {
-            throw new UnauthorizedException('Password salah');
+            throw new UnauthorizedException('Password is invalid');
         }
 
         const token = this.tokenService.generateToken(user.id, user.role);
