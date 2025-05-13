@@ -68,7 +68,7 @@ export class RestaurantsController {
     @UseGuards(AuthGuard, AdminGuard)
     async create(@Body() req: CreateRestaurantDto, @Res() res: Response) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
             const data = await this.restaurantsService.create(req);
@@ -94,7 +94,7 @@ export class RestaurantsController {
     @UseGuards(AuthGuard, AdminGuard)
     async update(@Param('id') id: string, @Body() req: UpdateRestaurantDto, @Res() res: Response) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
             const data = await this.restaurantsService.update(id, req);

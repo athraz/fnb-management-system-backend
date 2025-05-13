@@ -68,7 +68,7 @@ export class CategoriesController {
     @UseGuards(AuthGuard, AdminGuard)
     async create(@Body() req: CreateCategoryDto, @Res() res: Response) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
             const data = await this.categoriesService.create(req);
@@ -94,7 +94,7 @@ export class CategoriesController {
     @UseGuards(AuthGuard, AdminGuard)
     async update(@Param('id') id: string, @Body() req: UpdateCategoryDto, @Res() res: Response) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
             const data = await this.categoriesService.update(id, req);

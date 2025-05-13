@@ -28,7 +28,7 @@ export class CategoriesService {
                 name: req.name,
             },
         });
-        await this.cacheManager.del('category_all');
+        await this.cacheManager.del('categories_all');
         return newCategory;
     }
 
@@ -39,12 +39,12 @@ export class CategoriesService {
                 name: req.name,
             },
         });
-        await this.cacheManager.del('category_all');
+        await this.cacheManager.del('categories_all');
         return updatedCategory;
     }
 
     async delete(id: string) {
-        await this.cacheManager.del('category_all');
+        await this.cacheManager.del('categories_all');
         return this.prisma.category.delete({
             where: {id},
         })
