@@ -15,6 +15,7 @@ export class RabbitMQService {
             this.connection = await amqp.connect('amqp://localhost');
             this.channel = await this.connection.createChannel();
             await this.channel.assertQueue('menu_updates', { durable: true });
+            await this.channel.assertQueue('order_updates', { durable: true });
         } catch (error) {
             console.error('Error connecting to RabbitMQ:', error);
         }
@@ -26,5 +27,13 @@ export class RabbitMQService {
                 persistent: true,
             });
         }
+    }
+
+    async publishOrderUpdate(message: string) {
+        if (this.channel) {
+            this.channel.sendToQueue('order_updates', Buffer.from(message), {
+                persistent: true,
+            });
+        }  
     }
 }

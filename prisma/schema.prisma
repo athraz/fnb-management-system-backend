@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma/client"
 }
 
 datasource db {
@@ -60,6 +60,7 @@ model Order {
 }
 
 model OrderMenu {
+  count Decimal @db.Decimal(10, 0)
   menuId String
   orderId String
 
