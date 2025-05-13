@@ -8,9 +8,16 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { TokenService } from 'src/common/token/token.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
 
 class MockAuthGuard implements CanActivate {
+    canActivate(context: ExecutionContext): boolean {
+        return true;
+    }
+}
+
+class MockAdminGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
         return true;
     }
@@ -29,6 +36,7 @@ describe('CategoriesController', () => {
             providers: [
                 CategoriesService,
                 {provide: AuthGuard, useClass: MockAuthGuard},
+                {provide: AdminGuard, useClass: MockAdminGuard},
                 {provide: TokenService, useValue: {}},
             ],
         }).compile();

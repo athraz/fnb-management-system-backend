@@ -83,9 +83,9 @@ export class MenusController {
             }),
         }),
     )
-    async create(@Body() req: CreateMenuDto, @Res() res: Response, @UploadedFile() file: Express.Multer.File) {
+    async create(@Body() req: CreateMenuDto, @Res() res: Response, @UploadedFile() file: Express.Multer.File | undefined) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
             if (!file) {
@@ -131,12 +131,11 @@ export class MenusController {
             }),
         }),
     )
-    async update(@Param('id') id: string, @Body() req: UpdateMenuDto, @Res() res: Response, @UploadedFile() file: Express.Multer.File,) {
+    async update(@Param('id') id: string, @Body() req: UpdateMenuDto, @Res() res: Response, @UploadedFile() file: Express.Multer.File | undefined) {
         try {
-            if (!req) {
+            if (!req || Object.values(req).some(value => value === '')) {
                 throw new BadRequestException('Invalid data');
             }
-
             if (file) {
                 const imageUrl = `/uploads/${file.filename}`;
                 req.imageUrl = imageUrl;
